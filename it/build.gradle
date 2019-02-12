@@ -1,0 +1,83 @@
+defaultTasks 'clean','test','aggregate'
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.40")
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.4'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+apply from: "$rootDir/gradle/libraries.gradle"
+apply plugin: 'com.bmuschko.cargo'
+
+group = 'com.electroeing'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+dependencies {
+    compile libs.logback,
+            libs.springframework
+
+    testCompile libs.test.serenity.core,
+            libs.test.serenity.screenplay,
+            libs.test.serenity.screenplayWebdriver,
+            libs.test.serenity.junit,
+            libs.test.serenity.jbehave,
+            libs.test.junit,
+            libs.test.assertj,
+            libs.test.jbehave
+
+    def cargoVersion = '1.4.5'
+    cargo "org.codehaus.cargo:cargo-core-uberjar:$cargoVersion",
+            "org.codehaus.cargo:cargo-ant:$cargoVersion"
+}
+
+test {
+    testLogging.showStandardStreams = true
+    systemProperties System.getProperties()
+}
+
+gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate)
+
+cargo {
+    containerId = 'tomcat7x'
+    port = 8080
+
+    deployable {
+        file = file("../service/build/libs/service-${version}.war")
+        context = 'app'
+    }
+
+    local {
+        homeDir = file('C:\\apache-tomcat-7.0.92')
+        outputFile = file('build/output.log')
+        jvmArgs = '-Dspring.profiles.active=develop'
+        // jvmArgs = ' -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE -Dspring.profiles.active=develop '
+        timeout = 60000
+
+        containerProperties {
+            property 'cargo.tomcat.ajp.port', 8009
+        }
+    }
+}
+
+test.dependsOn cargoStartLocal
+test.finalizedBy cargoStopLocal
+cargoStartLocal.dependsOn(':service:war')

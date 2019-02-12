@@ -1,0 +1,9 @@
+logging:
+  config: /config/logback-spring.xml
+  level:
+    org.springframework.security: INFO
+server:
+  port: 8080
+  context-path: '/app'
+application:
+  enabled: false
