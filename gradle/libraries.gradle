@@ -7,11 +7,13 @@ ext{
     jbehaveVersion='4.3.5'
     serenityJbehaveVersion='1.44.0'
     springframeworkVersion='5.1.4.RELEASE'
+    gsonVersion='2.7'
 
     libs = [
             springframework: "org.springframework:spring-web:${springframeworkVersion}",
             slf4jApi: "org.slf4j:slf4j-api:$slf4jVersion",
             logback: "ch.qos.logback:logback-classic:${logbackVersion}",
+            gson: "com.google.code.gson:gson:${gsonVersion}",
 
             test: [
                     serenity: [

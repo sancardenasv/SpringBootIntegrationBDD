@@ -23,8 +23,8 @@ public class GetGreetScenarioSteps {
             RestClient client = new RestClient();
             this.result = client.get(this.service);
         } catch (Exception e) {
-            fail(e.getMessage());
             e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 

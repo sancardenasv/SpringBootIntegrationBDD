@@ -4,16 +4,15 @@ logging:
     org.springframework.security: INFO
 server:
   port: 8080
-  context-path: '/app'
 application:
-  enabled: false
+  enabled: true
 spring:
   datasource:
-    url: 'jdbc:h2:mem:proddb'
+    url: 'jdbc:h2:mem:testdb'
     username: 'sa'
     password: ''
     driver-class-name: org.h2.Driver
-    initialize: false
+    initialize: true
   h2:
     console:
       enabled: true
